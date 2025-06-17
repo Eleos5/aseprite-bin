@@ -12,7 +12,11 @@ jobs:
   build:
     runs-on: windows-2022
     steps:
-
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libjpeg-turbo8-dev zlib1g-dev libacl1-dev
+          
       - name: Checkout
         uses: actions/checkout@v4
 
