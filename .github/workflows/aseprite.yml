@@ -14,21 +14,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Build
-        id: build
-        shell: cmd
-        run: call build.cmd
-        env:
-          ASEPRITE_VERSION: ${{ github.event.inputs.version }}
-
-      - name: Archive
-        uses: actions/upload-artifact@v4
-        with:
-          name: aseprite-${{ steps.build.outputs.ASEPRITE_VERSION }}
-          path: github
-          if-no-files-found: error
-
+        
       - name: Clone Skia source & pull externals
         run: |
           git clone --depth 1 https://skia.googlesource.com/skia skia
@@ -49,4 +35,17 @@ jobs:
             -B build aseprite
           ninja -C build aseprite
 
+      - name: Build
+        id: build
+        shell: cmd
+        run: call build.cmd
+        env:
+          ASEPRITE_VERSION: ${{ github.event.inputs.version }}
+
+      - name: Archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: aseprite-${{ steps.build.outputs.ASEPRITE_VERSION }}
+          path: github
+          if-no-files-found: error
     
