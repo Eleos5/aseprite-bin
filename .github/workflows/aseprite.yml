@@ -28,3 +28,25 @@ jobs:
           name: aseprite-${{ steps.build.outputs.ASEPRITE_VERSION }}
           path: github
           if-no-files-found: error
+
+      - name: Clone Skia source & pull externals
+        run: |
+          git clone --depth 1 https://skia.googlesource.com/skia skia
+          cd skia
+          python tools/git-sync-deps
+          
+      - name: Download & extract Skia binaries
+        run: |
+          curl -L -o Skia-Windows-Release-x64.zip \
+            https://storage.googleapis.com/skia-…/Skia-Windows-Release-x64.zip
+          7z x Skia-Windows-Release-x64.zip -o skia/out/Release-x64
+          
+      - name: Configure & build Aseprite
+        run: |
+          cmake -G Ninja ^
+            -DLAF_BACKEND=skia ^
+            -DSKIA_DIR="%CD%\skia\out\Release-x64" ^
+            -B build aseprite
+          ninja -C build aseprite
+
+    
